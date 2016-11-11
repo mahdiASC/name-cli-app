@@ -7,6 +7,7 @@ class Attacks
 
 	@@all=[]
 
+	# Should have a list of pokemon it belongs to
 	def initialize (hash)
 		hash.each{|key, val| send("#{key}=", val)}
 		@@all << self
@@ -46,6 +47,6 @@ class Attacks
 	end
 	def self.find_by_acc
 	end
-	
+
 
 end
