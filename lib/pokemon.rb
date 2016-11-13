@@ -3,7 +3,7 @@ require "open-uri"
 require "pry"
 
 class Pokemon
-	attr_accessor :name, :hp, :atk, :def, :spec, :spd, :moves
+	attr_accessor :name, :hp, :atk, :def, :spec, :spd, :moveset
 
 	include Concerns::Basics
 	extend Concerns::ClassMods
@@ -14,7 +14,7 @@ class Pokemon
 		@@all
 	end
 
-	def self.add_by_url(url="http://www.psypokes.com/rby/maxstats.php")
+	def self.create_from_url(url="http://www.psypokes.com/rby/maxstats.php")
         # http://www.psypokes.com/rby/maxstats.php
 		html = open(url)
 		doc = Nokogiri::HTML(html)
@@ -25,6 +25,5 @@ class Pokemon
 			end
 			self.find_or_create({name:pokemon[1], hp:pokemon[3], atk:pokemon[4], def:pokemon[5], spec:pokemon[6], spd:pokemon[7]})
 		end
-		@@all
 	end
 end

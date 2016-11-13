@@ -18,10 +18,6 @@ module Concerns
                 end
             end
         end
-
-        def save
-            self.class.all<<self
-        end
     end
 
     module ClassMods
@@ -34,7 +30,8 @@ module Concerns
             #category is a string
             #search is a string
             all.select do |item|
-                item.instance_variable_get("@#{category}")==search
+                #Inconsistent naming -.-
+                item.instance_variable_get("@#{category}").downcase.gsub(/\s+/, "") == search.downcase.gsub(/\s+/, "")
             end
             #returns the item or nil if not found
         end
@@ -51,9 +48,7 @@ module Concerns
             if !find_by_name(hash[:name]).nil?
                 find_by_name(hash[:name])
             else
-                temp=new(hash)
-                temp.save
-                temp
+                new(hash)
             end
         end
     end
