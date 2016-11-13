@@ -3,15 +3,33 @@ require "open-uri"
 require "pry"
 
 class Moveset
-	attr_accessor :pokemon, :moves
+	attr_accessor :moves
+	attr_writer :pokemon
+	# to prevent circular references, pokemon will be a string, but will make an
+	# reader method that will find the pokemon
+	# thought Ruby GC could handle this...
 
 	include Concerns::Basics
 
+	def pokemon
+		Pokemon.find_by_name(@pokemon)
+	end
+
 	@@all=[]
+
+	def view
+		puts "POKEMON: #{@pokemon}"
+		puts "MOVE: LEVEL LEARNED"
+		puts "-------------------"
+		@moves.each do |move|
+			puts "#{move[1][:move].name.upcase}: #{move[1][:level]}"
+		end
+		nil
+	end
 
 	def initialize(args)
 		super(args)
-		@pokemon.moveset = self
+		pokemon.moveset = self
 		@moves.each do |key, attack|
 
 			if attack[:move].nil?
@@ -24,7 +42,6 @@ class Moveset
 			end
 			attack[:move].add_pokemon(@pokemon)
 		end
-		puts "Done with #{@pokemon.name}!"
 	end
 
 	class AttackError < StandardError
@@ -45,19 +62,16 @@ class Moveset
 		# Second url has pokemon names in proper pokemon order
 
 		#using list of pokemon moves in their correct pokemon order
-		html1 = open(url1)
-		doc1 = Nokogiri::HTML(html1)
+		doc1 = Nokogiri::HTML(open(url1, :read_timeout => 10))
 		rawContent=doc1.css("body #lycosFooterAd~*")
 
 		#using correct order list of pokemon (cannot be parsed from first url)
-		html2 = open(url2)
-		doc2 = Nokogiri::HTML(html2)
+		doc2 = Nokogiri::HTML(open(url2, :read_timeout => 10))
 		pokemonList=doc2.css("table")[1].css("tr~tr")
 
 		counter = 0
 		pokemonCounter = 0
 		while counter < rawContent.length do
-			puts counter
 			moveset= {}
 			if rawContent[counter].text.strip.downcase.include?("level learned") || rawContent[counter].text.strip.split(": ")[1] == "-"
 				#getting name of pokemon, used for connecting pokemon w/moves
@@ -70,7 +84,7 @@ class Moveset
 					pokemonName = "Nidoran M"
 				end
 
-				moveset[:pokemon] = Pokemon.find_by_name(pokemonName)
+				moveset[:pokemon] = pokemonName
 
 				pokemonCounter += 1
 				#getting moves for next pokemon in list order
@@ -106,7 +120,6 @@ class Moveset
 						level = "-"
 						moveName = moveName.gsub(" -", "").gsub(":","")
 					end
-
 					temp[:move] = Attacks.find_by_name(moveName)
 					temp[:level] = level
 					moveset[:moves][moveNum.to_s.to_sym] = temp

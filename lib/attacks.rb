@@ -3,7 +3,8 @@ require "open-uri"
 require "pry"
 
 class Attacks
-	attr_accessor :name, :desc, :type, :pp, :power, :acc, :pokemon
+	attr_accessor :name, :desc, :type, :pp, :power, :acc
+	attr_writer :pokemon
 
 	include Concerns::Basics
 	extend Concerns::ClassMods
@@ -11,6 +12,10 @@ class Attacks
 	#Should have a list of which pokemon this move belongs and can look up
 
 	@@all=[]
+
+	def pokemon
+		Pokemon.find_by_name(@pokemon)
+	end
 
 	def initialize(args)
 		@pokemon = []
@@ -22,29 +27,20 @@ class Attacks
 	end
 
 	def add_pokemon(pokemon)
-		#adds an obj of class Pokemon
-		if pokemon.is_a?(Pokemon)
-			if !@pokemon.include?(pokemon)
-				@pokemon << pokemon
-			end
-		else
-			begin
-				raise PokemonError
-			rescue PokemonError => error
-				puts error.message
-			end
+		if !@pokemon.include?(pokemon)
+			@pokemon << pokemon
 		end
 	end
 
-	class PokemonError < StandardError
-		def message
-			"The input was not a proper instance of the Pokemon class"
-		end
-	end
+	# class PokemonError < StandardError
+	# 	def message
+	# 		"The input was not a proper instance of the Pokemon class"
+	# 	end
+	# end
 
 	def self.create_from_url(url="http://www.psypokes.com/rby/attacks.php")
 		# http://www.psypokes.com/rby/attacks.php
-		html = open(url)
+		html = open(url, :read_timeout => 10)
 		doc = Nokogiri::HTML(html)
 		# tr~tr means tr preceeded by a tr (avoids the header)
 		doc.css("table.psypoke tr~tr").each do |row|
@@ -53,5 +49,7 @@ class Attacks
 			end
 			self.find_or_create({name:attack[0], desc:attack[1], type:attack[2], pp:attack[3], power:attack[4], acc:attack[5]})
 		end
+		all
 	end
+
 end

@@ -7,13 +7,17 @@ class Pokedex
 
     def initialize
 		# Loads all pokemon and all attacks into pokedex
-		Pokemon.create_from_url
-		@pokemon = Pokemon.all
-		Attacks.create_from_url
-		@attacks = Attacks.all
+		@pokemon = Pokemon.create_from_url
+		@attacks = Attacks.create_from_url
 
 		# Moveset handles bridginge the Pokemon with their moves
 		Moveset.create_from_url
-		puts "Done!"
-    end
+		end
+
+		#add method for finding a pokemon by partial match
+		#add method for finding move by partial match
+		#add method for filtering database for pokemon stats
+		#add method for filtering database for attack details w/partial match
+		
+
 end
