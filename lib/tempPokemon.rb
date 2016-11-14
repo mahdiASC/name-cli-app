@@ -15,21 +15,22 @@ class TempPokemon < Pokemon
     # parsing data from pokedex pokemon
     pokemon.instance_variables.each do |item|
       if item != :@moveset
-        self.instance_variable_set(item, pokemon.instance_variable_get(item))
+        temp = pokemon.instance_variable_get(item)
       else
         #Using just the 4 most advanced moves (not caring about linking attacks to pokemon)
+        temp=[]
         if pokemon.instance_variable_get(item).moves.length <4
-          self.instance_variable_set(item, pokemon.instance_variable_get(item).moves)
+            pokemon.instance_variable_get(item).moves.collect do |key,move|
+                temp << TempAttacks.new(move[:move])
+            end
         else
           moves=pokemon.instance_variable_get(item).moves
-          output = {}
           ((moves.length-3)..(moves.length)).to_a.each do |index|
-            output[index.to_s.to_sym]= moves[index.to_s.to_sym]
+            temp << TempAttacks.new(moves[index.to_s.to_sym][:move])
           end
-          self.instance_variable_set(item,output)
         end
       end
-
+      self.instance_variable_set(item,temp)
     end
     nil
   end

@@ -32,12 +32,6 @@ class Attacks
 		end
 	end
 
-	# class PokemonError < StandardError
-	# 	def message
-	# 		"The input was not a proper instance of the Pokemon class"
-	# 	end
-	# end
-
 	def self.create_from_url(url="http://www.psypokes.com/rby/attacks.php")
 		# http://www.psypokes.com/rby/attacks.php
 		html = open(url, :read_timeout => 10)

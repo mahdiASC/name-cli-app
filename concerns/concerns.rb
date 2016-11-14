@@ -7,12 +7,12 @@ module Concerns
       	end
 
         def view
-          puts "#{self.name.upcase}"
-          puts '------------------'
+            puts '------------------'
             self.instance_variables.each do |item|
-              puts "#{item.to_s.gsub!("@","").upcase}: #{self.instance_variable_get(item)}"
+                puts '------------------'
+                puts "#{item.to_s.gsub!("@","").upcase}: #{self.instance_variable_get(item)}"
             end
-            nil
+            puts '------------------'
         end
     end
 
