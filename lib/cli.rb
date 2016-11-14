@@ -1,6 +1,10 @@
 class Pokemon::CLI
+  attr_accessor :newGame
+
+    @@all = []
 
     def initialize
+      @@all << self
         puts "Welcome to PokemonCLI!"
         puts "You will be given a random party of pokemon to battle with against and AI"
 
@@ -32,13 +36,18 @@ class Pokemon::CLI
             player1 = AI.new(reply2)
             player2 = Human.new
         end
-        newGame = Game.new(player1, player2)
-        play
+        @newGame = Game.new(player1, player2)
+        @newGame
     end
 
     def play
-        # until Game.over? do
-        #
-        # end
+      # reply = nil
+      #   until @newGame.over? || reply == "exit" do
+      #
+      #   end
+    end
+
+    def self.all
+      @@all
     end
 end

@@ -1,8 +1,9 @@
 class AI < Player
-    attr_accessor :token, :party, :currentPokemon, :difficulty
+  attr_accessor :token, :currentPokemon, :difficulty
+  attr_reader :party
 
   def initialize(difficulty)
-    @difficulty = difficulty
+    @difficulty = difficulty[0]
   end
 
   def make_move
@@ -11,8 +12,6 @@ class AI < Player
     else
       advanced_move
     end
-    #should return a hash of the opponent's stat to change (string) and the amount (integer)
-    #Otherwise, some special effect
   end
 
   def easy_move
@@ -20,6 +19,12 @@ class AI < Player
   end
 
   def advanced_move
-
+    @currentPokemon.moveset.max do |move|
+      if move.pp >0
+        move.power.to_i
+      else
+        0
+      end
+    end
   end
 end

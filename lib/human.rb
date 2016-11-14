@@ -1,12 +1,12 @@
 class Human < Player
-    attr_accessor :token, :party, :currentPokemon
-
+  attr_accessor :token, :currentPokemon
+  attr_reader :party
   def make_move
 
   end
 
   def changePokemon(index)
-      @currentPokemon = party[index.to_i-1]
+    @currentPokemon = party[index.to_i-1]
   end
 
 end
