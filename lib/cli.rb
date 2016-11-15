@@ -1,22 +1,23 @@
 class Pokemon::CLI
   attr_accessor :newGame
 
-    @@all = []
+  def call
 
-    def initialize
-      @@all << self
-        puts "Welcome to PokemonCLI!"
-        puts "You will be given a random party of pokemon to battle with against and AI"
 
-        reply1 = nil
-        until !reply1.nil? do
-            puts "Would you like to go first? (y)es (n)o"
-            reply1 = gets.strip.downcase
-            if reply1[0]!="y" && reply1[0]!="n"
-                puts "Invalid response!"
-                reply1 = nil
-            end
+  end
+
+    puts "Welcome to PokemonCLI!"
+    puts "You will be given a random party of pokemon to battle with against and AI"
+
+    reply1 = nil
+    until !reply1.nil? do
+        puts "Would you like to go first? (y)es (n)o"
+        reply1 = gets.strip.downcase
+        if reply1[0]!="y" && reply1[0]!="n"
+            puts "Invalid response!"
+            reply1 = nil
         end
+    end
 
 
         reply2 = nil
@@ -41,13 +42,6 @@ class Pokemon::CLI
     end
 
     def play
-      # reply = nil
-      #   until @newGame.over? || reply == "exit" do
-      #
-      #   end
     end
 
-    def self.all
-      @@all
-    end
 end
