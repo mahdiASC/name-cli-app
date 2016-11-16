@@ -26,4 +26,9 @@ class TempAttacks
       "The input was not a proper instance of the Attacks class"
     end
   end
+
+  # Formula
+  # https://www.gamefaqs.com/gameboy/367023-pokemon-red-version/faqs/54432
+
+  
 end
