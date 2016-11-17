@@ -1,6 +1,6 @@
 require "pry"
 class TempPokemon < Pokemon
-  attr_accessor :name, :hp, :atk, :def, :spec, :spd, :moveset
+  attr_accessor :name, :hp, :type, :atk, :def, :spec, :spd, :moveset
 
   def initialize(pokemon)
     #copies almost everything from a pokedex pokemon
@@ -39,4 +39,13 @@ class TempPokemon < Pokemon
 			"The input was not a proper instance of the Pokemon class"
 		end
 	end
+
+  def takeDamage(num)
+    temp = @hp.to_i
+    temp = temp - num
+    if temp <0
+      temp = 0
+    end
+    temp
+  end
 end

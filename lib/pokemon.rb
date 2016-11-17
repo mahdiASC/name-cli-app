@@ -3,7 +3,7 @@ require "open-uri"
 require "pry"
 
 class Pokemon
-	attr_accessor :name, :hp, :atk, :def, :spec, :spd, :moveset
+	attr_accessor :name, :hp, :type, :atk, :def, :spec, :spd, :moveset
 
 	include Concerns::Basics
 	extend Concerns::ClassMods

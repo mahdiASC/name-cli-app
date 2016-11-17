@@ -86,6 +86,9 @@ class Moveset
 
 				moveset[:pokemon] = pokemonName
 
+				#adding in pokemon Type		
+				Pokemon.find_by_name(pokemonName).type = pokemonList[pokemonCounter].css("td").drop(4).collect{|column| column.text.strip}
+
 				pokemonCounter += 1
 				#getting moves for next pokemon in list order
 				moveset[:moves] = {}
