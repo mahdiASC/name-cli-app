@@ -4,77 +4,77 @@ class TempAttacks
   attr_accessor :name, :desc, :type, :pp, :power, :acc
 
   ATTACKTYPES={
-    "normal"={
+    "normal"=>{
       :immune=>["ghost"],
       :half=>["rock"],
       :double=>[]
     },
-    "fire"={
+    "fire"=>{
       :immune=>[],
       :half=>["fire","water","rock","dragon"],
       :double=>["grass","ice","bug"]
     },
-    "water"={
+    "water"=>{
       :immune=>[],
       :half=>["water","grass","dragon"],
       :double=>["fire","ground","rock"]
     },
-    "electric"={
+    "electric"=>{
       :immune=>["ground"],
       :half=>["electric","grass","dragon"],
       :double=>["water","flying"]
     },
-    "grass"={
+    "grass"=>{
       :immune=>[],
       :half=>["fire","grase","poison", "flying", "bug","dragon"],
       :double=>["water", "ground","rock"]
     },
-    "ice"={
+    "ice"=>{
       :immune=>[],
       :half=>["water","ice"],
       :double=>["grass",'flying','dragon']
     },
-    "fighting"={
+    "fighting"=>{
       :immune=>['ghost'],
       :half=>['poison', 'flying','psychic','bug'],
       :double=>['normal','ice','rock']
     },
-    "poison"={
+    "poison"=>{
       :immune=>[],
       :half=>['poison','ground','rock','ghost'],
       :double=>['grass','bug']
     },
-    "ground"={
+    "ground"=>{
       :immune=>['flying'],
       :half=>['grass','bug'],
       :double=>['fire','electric','poison','rock']
     },
-    "flying"={
+    "flying"=>{
       :immune=>[],
       :half=>['electric','rock'],
       :double=>['grass','poison','bug']
     },
-    "psychic"={
+    "psychic"=>{
       :immune=>[],
       :half=>['psychic'],
       :double=>['fighting','poison']
     },
-    "bug"={
+    "bug"=>{
       :immune=>[],
       :half=>['fire','fighting','flying','ghost'],
       :double=>['grass','poison','psychic']
     },
-    "rock"={
+    "rock"=>{
       :immune=>[],
       :half=>['fighting','ground'],
       :double=>['fire','ice','flying','bug']
     },
-    "ghost"={
+    "ghost"=>{
       :immune=>[],
       :half=>[],
       :double=>['ghost']
     },
-    "dragon"={
+    "dragon"=>{
       :immune=>[],
       :half=>[],
       :double=>['dragon']
@@ -105,8 +105,45 @@ class TempAttacks
     end
   end
 
+  def specialMove?
+      ["water","grass","fire","ice",'electric','psychic','dragon'].include?(@type.downcase)
+  end
+
+  def calCrit(selfPokemon)
+      selfPokemon.spd.to_i
+  end
+
+  def doDamage(selfPokemon,opponentPokemon)
+  # opponent is a tempPokemon instance
+  binding.pry
   # Formula
   # https://www.gamefaqs.com/gameboy/367023-pokemon-red-version/faqs/54432
 
+  # damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
 
+  # aPower - Attack power if you use a Physical attack, Special power if you use a
+  # Special attack.
+  aPower = specialMove? ?  selfPokemon.spec.to_i : selfPokemon.atk.to_i
+  # bPower - Base power of the move, such as 120 for Hydro Pump, 100 for Earthquake etc.
+  # You can find these numbers in Appendix B.
+  bPower = @power #bit redundant, but keeps things organized!
+  # dPower - Defense power of the opponent if you use a Physical attack, Special power
+  # if you’re using a Special attack.
+  dPower = specialMove? ?  opponentPokemon.spec.to_i : opponentPokemon.atk.to_i
+  # multipliers - All multipliers including 1.5 for an attack matching your Pokemon's type, 2
+  # for each weakness, 0.5 for each resistance, 0 for immunities, and 2 for Critical
+  # Hits. Apply all of these as they occur, and multiply them all together. The
+  # result is M. The highest this can be is 12 if you use an attacking matching your
+  # Pokemon's type, which is Super Effective against both types of the opponent, and
+  # also is a Critical Hit.
+
+
+  # randomNum - A random number from 217 to 255. This creates the minimum and maximum each
+  # attack can do. Roughly, the attack can do anywhere from ~85% to 100% of its
+  # expected damage.
+  randomNum = rand(217..255)
+
+  damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
+
+  end
 end
