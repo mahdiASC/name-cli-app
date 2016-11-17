@@ -2,46 +2,53 @@ class Pokemon::CLI
   attr_accessor :newGame
 
   def call
+    #each player given 6 random pokemon to battle with
+    #1 player is Human, other is AI
+    #user decides who goes first and what AI difficulty is
+    #user has access to Pokedex, Main attacks (out of usable?),
+    puts "Welcome to PokemonCLI!"
+    puts "You will be given a random party of pokemon to battle with against an AI"
+    reply = nil
+    until reply == "y"
+      diff = nil
+      until diff == "e" || diff == "h"
+        puts "Set the AI difficulty. (e)asy (h)ard"
+        diff = gets.strip.downcase.first
+      end
 
+      until reply == "y" || reply == "n"
+        puts "Would you like to go first? (y)es (n)o"
+        reply = gets.strip.downcase.first
+      end
 
+      case reply
+      when "y"
+        newGame = Game.new(Human.new, AI.new(diff))
+        viewPokemon(newGame.player1)
+      when "n"
+        newGame = Game.new(AI.new(diff),Human.new)
+        viewPokemon(newGame.player2)
+      end
+
+      until reply == "exit"
+        puts "options"
+        reply = gets.strip
+        case reply
+        when
+        when
+        when
+        else
+        end
+
+      end
+      puts "Would you like to play again? (y)es (n)o"
+      reply = gets.strip.downcase.first
+    end
+    puts "Thanks for playing PokemonCLI. I hope you had fun!"
   end
-    #
-    # puts "Welcome to PokemonCLI!"
-    # puts "You will be given a random party of pokemon to battle with against and AI"
-    #
-    # reply1 = nil
-    # until !reply1.nil? do
-    #     puts "Would you like to go first? (y)es (n)o"
-    #     reply1 = gets.strip.downcase
-    #     if reply1[0]!="y" && reply1[0]!="n"
-    #         puts "Invalid response!"
-    #         reply1 = nil
-    #     end
-    # end
-    #
-    #
-    #     reply2 = nil
-    #     until !reply2.nil? do
-    #         puts "What AI difficulty do you want? (e)asy (h)ard"
-    #         reply2 = gets.strip.downcase
-    #         if reply2[0]!="e" && reply2[0]!="h"
-    #             puts "Invalid response!"
-    #             reply2 = nil
-    #         end
-    #     end
-    #
-    #     if reply1[0] == "y"
-    #         player1 = Human.new
-    #         player2 = AI.new(reply2)
-    #     else
-    #         player1 = AI.new(reply2)
-    #         player2 = Human.new
-    #     end
-    #     @newGame = Game.new(player1, player2)
-    #     @newGame
-    # end
-    #
-    # def play
-    # end
 
+  def viewPokemon(humanPlayer)
+    puts "You have the following pokemon (the first pokemon is your starter):"
+    humanPlayer.party.each_with_index{|pokemon, index| puts "##{index}: #{pokemon.name}"}
+  end
 end

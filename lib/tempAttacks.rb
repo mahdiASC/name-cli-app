@@ -165,7 +165,12 @@ class TempAttacks
     end
   end
 
+  def struggle?
+    @pp.to_i<1
+  end
+
   def doUnique(selfPokemon,opponentPokemon)
+    #should return array for CLI
     "This is a unique effect"
   end
 
@@ -175,7 +180,6 @@ class TempAttacks
   # https://www.gamefaqs.com/gameboy/367023-pokemon-red-version/faqs/54432
 
   # damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
-
   # aPower - Attack power if you use a Physical attack, Special power if you use a
   # Special attack.
   aPower = specialMove? ?  selfPokemon.spec.to_i : selfPokemon.atk.to_i
@@ -192,23 +196,9 @@ class TempAttacks
   # Pokemon's type, which is Super Effective against both types of the opponent, and
   # also is a Critical Hit.
 
-  if calcTypeMult(selfPokemon,opponentPokemon)>1
-    typeText=", and it was super effective"
-  elsif calcTypeMult(selfPokemon,opponentPokemon)<1
-    typeText=", and it was not very effective"
-  else
-    typeText = ""
-  end
-
   myCrit = calcCritMult(selfPokemon)
-  if myCrit>1
-    critText = ", and it was a critical strike"
-  else
-    critText = ""
-  end
 
   multipliers = calcTypeMult(selfPokemon,opponentPokemon)*myCrit*calcMatchMult(selfPokemon)
-
 
   # randomNum - A random number from 217 to 255. This creates the minimum and maximum each
   # attack can do. Roughly, the attack can do anywhere from ~85% to 100% of its
@@ -217,6 +207,11 @@ class TempAttacks
 
   damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
   opponentPokemon.takeDamage(damage.floor)
-  "#{selfPokemon.name} used #{@name} on #{opponentPokemon.name} dealing #{damage.floor} damage#{typeText}#{critText}!"
+  if @name = "Struggle"
+    selfPokemon.takeDamage((damage.floor/4).floor)
+  end
+  #Returns array of pertinent information for the CLI
+  # [damage, name of move, critical multiplyer, type multiplier]
+  [damage, myName, myCrit, calcTypeMult(selfPokemon,opponentPokemon)]
   end
 end
