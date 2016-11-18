@@ -24,8 +24,13 @@ module Concerns
             #category is a string
             #search is a string
             output = all.select do |item|
+              if category == "moveset" || category == "type"
+                nil #forces partial matching
+              else
                 item.instance_variable_get("@#{category}").downcase.gsub(/\s+/, "") == search.downcase.gsub(/\s+/, "")
+              end
             end
+
             #returns the item or nil if not found
 
             if output.size < 1
@@ -38,7 +43,14 @@ module Concerns
             #category is a string
             #search is a string
             all.select do |item|
+              if category == "moveset"
+                # binding.pry
+                item.moveset.moves.any?{|key, move| move[:move].name.downcase.gsub(/\s+/, "").include?(search.downcase.gsub(/\s+/, ""))}
+              elsif category == "type"
+                item.type.any?{|type| type.downcase.gsub(/\s+/, "").include?(search.downcase.gsub(/\s+/, ""))}
+              else
                 item.instance_variable_get("@#{category}").downcase.gsub(/\s+/, "").include?(search.downcase.gsub(/\s+/, ""))
+              end
             end
             #returns the item or nil if not found
         end

@@ -16,7 +16,7 @@ class Moveset
 	end
 
 	def self.find_by_pokemon(name)
-		all.detect {|moveset| moveset.pokemon.name == name}
+		all.detect {|moveset| moveset.pokemon.name.downcase.gsub(/\s+/, "") == name.downcase.gsub(/\s+/, "")}
 	end
 
 	@@all=[]
@@ -82,16 +82,16 @@ class Moveset
 				pokemonName = correctPokeName(pokemonList[pokemonCounter].css("td")[3].text.strip)
 				# encoding issues
 				# binding.pry
-				until !Pokemon.find_by_name(pokemonName).nil? #had to add after websie changed
+				until find_by_pokemon(pokemonName).nil? #had to add after websie changed
 					pokemonCounter += 1
-					binding.pry
 					pokemonName = correctPokeName(pokemonList[pokemonCounter].css("td")[3].text.strip)
 				end
-				pokemonCounter += 1
 
 				moveset[:pokemon] = pokemonName
 				#adding in pokemon Type
 				Pokemon.find_by_name(pokemonName).type = pokemonList[pokemonCounter].css("td").drop(4).collect{|column| column.text.strip}
+				pokemonCounter += 1
+
 				#getting moves for next pokemon in list order
 				moveset[:moves] = {}
 				moveNum = 1

@@ -23,6 +23,8 @@ class Pokemon::CLI
         reply = gets.strip.downcase[0]
       end
 
+      system "clear"
+      puts "Setting up game. Please wait..."
       case reply
       when "y"
         newGame = Game.new(Human.new, AI.new(diff))
@@ -31,7 +33,7 @@ class Pokemon::CLI
         newGame = Game.new(AI.new(diff),Human.new)
         viewPokemon(newGame.player2)
       end
-
+      system "clear"
       until reply == "e"
         puts "Pick an option: (a)ttack (s)witch (p)okedex (e)xit"
         reply = gets.strip.downcase[0]
@@ -85,7 +87,7 @@ class Pokemon::CLI
               end
           when "p", "pokemon"
               pokeReply = nil
-              until pokeReply == "exit"
+              until pokeReply == "exit" #BACK INSTEAD OF EXIT
                   puts "Pokedex: Pokemon: Search (n)ame or (t)ype or (a)ttack name or (show all)? (exit)"
                   pokeReply = gets.strip.downcase
                   case pokeReply
@@ -121,7 +123,7 @@ class Pokemon::CLI
           end
           reply = nil
           until reply == "exit"
-              puts "Select from the list (from 1-#{attackList.size}) to learn more. (exit)"
+              puts "Select from the list of attacks (from 1-#{attackList.size}) to learn more. (exit)"
               reply = gets.downcase.strip
               if reply != "exit"
                   fullView(attackList[reply.to_i-1])
@@ -132,6 +134,7 @@ class Pokemon::CLI
 
   def putsPokemon(search, category)
       if category == "showAll"
+          puts "ALL POKEMON (in order of highest combined stats):"
           pokeList = Pokemon.all
       else
           pokeList = Pokemon.find_by(search, category)
@@ -140,12 +143,12 @@ class Pokemon::CLI
           puts "!!!Could not find in Pokedex!!!"
       else
           pokeList.each_with_index do |poke,index|
-              binding.pry
+              # binding.pry
               puts "##{index+1} #{poke.name}:: TYPE: #{poke.type.join(" + ")} HP:#{poke.hp} ATK: #{poke.atk} DEF: #{poke.def} SPECIAL: #{poke.spec} SPD: #{poke.spd}"
           end
           reply = nil
           until reply == "exit"
-              puts "Select from the list (from 1-#{pokeList.size}) to learn more. (exit)"
+              puts "Select from the list of pokemon (from 1-#{pokeList.size}) to learn more. (exit)"
               reply = gets.downcase.strip
               if reply != "exit"
                   fullView(pokeList[reply.to_i-1])
@@ -168,7 +171,7 @@ class Pokemon::CLI
               puts "ATTACKS:"
               obj.moveset.moves.each do |move|
                 #   binding.pry
-                  puts "LEVEL LEARNED: #{move[1][:level]} NAME: #{move[1][:move].name} TYPE: #{move[1][:move].type} POWER: #{move[1][:move].power} ACC: #{move[1][:move].acc} PP: #{move[1][:move].pp}"
+                  puts "#{move[1][:move].name} | LVL: #{move[1][:level]} | TYPE: #{move[1][:move].type} | POWER: #{move[1][:move].power} | ACC: #{move[1][:move].acc} | PP: #{move[1][:move].pp}"
               end
           when :@type
               puts "#{item.to_s.gsub!("@","").upcase}: #{obj.instance_variable_get(item).join(" + ")}"
