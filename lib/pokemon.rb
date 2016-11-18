@@ -27,4 +27,11 @@ class Pokemon
 		end
 		all
 	end
+
+	# def find_by_move(search)
+	# 	#seach is a string
+	# 	#This function searches all pokemon for attacks matching the search string
+	# 	#and returns an array of pokemon with a match or partial match to the search parameter
+	#
+	# end
 end

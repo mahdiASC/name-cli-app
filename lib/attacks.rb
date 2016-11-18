@@ -3,8 +3,7 @@ require "open-uri"
 require "pry"
 
 class Attacks
-	attr_accessor :name, :desc, :type, :pp, :power, :acc
-	attr_writer :pokemon
+	attr_accessor :name, :desc, :type, :pp, :power, :acc, :pokemon
 
 	include Concerns::Basics
 	extend Concerns::ClassMods
@@ -12,10 +11,6 @@ class Attacks
 	#Should have a list of which pokemon this move belongs and can look up
 
 	@@all=[]
-
-	def pokemon
-		Pokemon.find_by_name(@pokemon)
-	end
 
 	def initialize(args)
 		@pokemon = []

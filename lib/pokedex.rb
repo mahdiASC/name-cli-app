@@ -13,11 +13,4 @@ class Pokedex
 		# Moveset handles bridginge the Pokemon with their moves
 		Moveset.create_from_url
 		end
-
-		#add method for finding a pokemon by partial match
-		#add method for finding move by partial match
-		#add method for filtering database for pokemon stats
-		#add method for filtering database for attack details w/partial match
-		
-
 end

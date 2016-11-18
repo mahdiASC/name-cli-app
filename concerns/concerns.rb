@@ -5,15 +5,6 @@ module Concerns
           hash.each{|key, val| send("#{key}=", val)}
       		self.class.all << self
       	end
-
-        def view
-            puts '------------------'
-            self.instance_variables.each do |item|
-                puts '------------------'
-                puts "#{item.to_s.gsub!("@","").upcase}: #{self.instance_variable_get(item)}"
-            end
-            puts '------------------'
-        end
     end
 
     module ClassMods
@@ -32,17 +23,22 @@ module Concerns
         def find_by(search, category="name")
             #category is a string
             #search is a string
-            # if include?(category)
-            #   begin
-            #     raise CategoryError
-            #   rescue CategoryError => error
-            #     puts error.message
-            #   end
-            # end
-
-            all.select do |item|
-                #Inconsistent naming -.-
+            output = all.select do |item|
                 item.instance_variable_get("@#{category}").downcase.gsub(/\s+/, "") == search.downcase.gsub(/\s+/, "")
+            end
+            #returns the item or nil if not found
+
+            if output.size < 1
+                output = find_partial(search, category)
+            end
+            output
+        end
+
+        def find_partial(search, category="name")
+            #category is a string
+            #search is a string
+            all.select do |item|
+                item.instance_variable_get("@#{category}").downcase.gsub(/\s+/, "").include?(search.downcase.gsub(/\s+/, ""))
             end
             #returns the item or nil if not found
         end
@@ -50,6 +46,7 @@ module Concerns
         def find_by_name(name)
           all.detect do |item|
               #Inconsistent naming -.-
+            #   binding.pry
               item.instance_variable_get("@name").downcase.gsub(/\s+/, "") == name.downcase.gsub(/\s+/, "")
           end
         end

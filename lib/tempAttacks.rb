@@ -207,7 +207,7 @@ class TempAttacks
 
   damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
   opponentPokemon.takeDamage(damage.floor)
-  if @name = "Struggle"
+  if @name == "Struggle"
     selfPokemon.takeDamage((damage.floor/4).floor)
   end
   #Returns array of pertinent information for the CLI
