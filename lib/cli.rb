@@ -28,20 +28,23 @@ class Pokemon::CLI
       case reply
       when "y"
         newGame = Game.new(Human.new, AI.new(diff))
+        system "clear"
         viewPokemon(newGame.player1)
       when "n"
         newGame = Game.new(AI.new(diff),Human.new)
+        system "clear"
         viewPokemon(newGame.player2)
       end
-      system "clear"
+
       until reply == "e"
+        puts "=================================================="
         puts "Pick an option: (a)ttack (s)witch (p)okedex (e)xit"
         reply = gets.strip.downcase[0]
         case reply
         when "a"
             puts "a input"
         when "s"
-            puts "s input"
+            switchPokemon(newGame)
         when "p"
             accessPokedex
         end
@@ -59,6 +62,47 @@ class Pokemon::CLI
   def viewPokemon(humanPlayer)
     puts "You have the following pokemon (the first pokemon is your starter):"
     humanPlayer.party.each_with_index{|pokemon, index| puts "##{index+1}: #{pokemon.name}"}
+  end
+
+  def switchPokemon(game)
+      puts "#####################"
+      puts "Party:"
+      partyView(game.currentPlayer)
+      puts "#####################"
+
+      reply = nil
+      until reply == "back" || reply == "exit"
+          puts "Which pokemon do you want to switch to (1-6)? (back)"
+          reply = gets.strip.downcase
+          case reply.to_i
+          when 1,2,3,4,5,6
+              if validSwitch?(game.currentPlayer, reply.to_i-1)
+                  puts "Come back #{game.currentPlayer.currentPokemon.name}! Go, #{game.currentPlayer.party[reply.to_i-1].name}!"
+                  game.currentPlayer.changePokemon(reply.to_i)
+                  game.addTurn
+                  reply = "exit"
+              else
+                  puts "That pokemon is already out!"
+              end
+          end
+      end
+  end
+
+  def validSwitch?(player, index)
+      player.currentPokemon != player.party[index]
+  end
+
+  def partyView(player)
+      player.party.each_with_index do |poke, index|
+          if poke.hp.to_i == 0
+              status = "'Unconscious'"
+          elsif poke == player.currentPokemon
+              status = "'Already out'"
+          else
+              status = "'OK'"
+          end
+          puts "##{index+1} #{poke.name} | STATUS #{status} | TYPE: #{poke.type.join(" + ")} | HP:#{poke.hp} | ATK: #{poke.atk} | DEF: #{poke.def} | SPECIAL: #{poke.spec} | SPD: #{poke.spd}"
+      end
   end
 
   def accessPokedex

@@ -36,7 +36,7 @@ class Game
     end
 
 
-    def currentPlayer?
+    def currentPlayer
         @turnNum.odd? ? @player1 : @player2
     end
 
@@ -52,8 +52,8 @@ class Game
         end
     end
 
-    def turn
-        currentPlayer?
+    def addTurn
+        @turnNum += 1
     end
 
 
