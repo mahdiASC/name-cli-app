@@ -148,8 +148,9 @@ class TempAttacks
   end
 
   def makeAttack(selfPokemon,opponentPokemon)
+      #returns a string or and array of what happened
     if miss?
-      "The attack missed!"
+      "miss"
     else
       attackDeterminer(selfPokemon,opponentPokemon)
     end
@@ -171,7 +172,7 @@ class TempAttacks
 
   def doUnique(selfPokemon,opponentPokemon)
     #should return array for CLI
-    "This is a unique effect"
+    "lazy"
   end
 
   def doDamage(selfPokemon,opponentPokemon)

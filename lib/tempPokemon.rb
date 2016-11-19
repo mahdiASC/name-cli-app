@@ -46,6 +46,10 @@ class TempPokemon < Pokemon
     if temp <0
       temp = 0
     end
-    temp
+    @hp = temp
+  end
+
+  def totalPP
+      @moveset.collect {|move| move.pp.to_i}.reduce(:+)
   end
 end

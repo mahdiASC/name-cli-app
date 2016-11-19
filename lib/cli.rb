@@ -36,19 +36,24 @@ class Pokemon::CLI
         viewPokemon(newGame.player2)
       end
 
-      until reply == "e"
-        puts "=================================================="
-        puts "Pick an option: (a)ttack (s)witch (p)okedex (e)xit"
-        reply = gets.strip.downcase[0]
-        case reply
-        when "a"
-            puts "a input"
-        when "s"
-            switchPokemon(newGame)
-        when "p"
-            accessPokedex
-        end
-
+      until reply == "e" || newGame.over?
+          if newGame.currentPlayer.is_a?(AI)
+              #AI logic goes here
+          else #human player has UI
+              puts "=================================================="
+              puts "ENEMY POKEMON: #{newGame.aiPlayer.currentPokemon} | HP: #{newGame.aiPlayer.currentPokemon.hp}"
+              puts "CURRENT POKEMON: #{newGame.humanPlayer.currentPokemon} | HP: #{newGame.humanPlayer.currentPokemon.hp}"
+              puts "Pick an option: (a)ttack (s)witch (p)okedex (e)xit"
+              reply = gets.strip.downcase[0]
+              case reply
+              when "a"
+                  startAttack(newGame)
+              when "s"
+                  switchPokemon(newGame)
+              when "p"
+                  accessPokedex
+              end
+          end
       end
 
       until reply == "y" || reply == "n"
@@ -59,6 +64,47 @@ class Pokemon::CLI
     puts "Thanks for playing PokemonCLI. I hope you had fun!"
   end
 
+  def startAttack(game)
+      #add Ruby sleep 1
+
+      #Check if attacks are able to be used (PPs avail) use struggle in place of real move and cut option to pick attack
+      if game.humanPlayer.currentPokemon.totalPP == 0
+          puts "#{game.humanPlayer.currentPokemon.name} is out of moves!"
+          puts "#{game.humanPlayer.currentPokemon.name} used Struggle!"
+          struggle = TempAttacks.new(Attacks.find_by_name("struggle"))
+          struggle.makeAttack(game.humanPlayer,game.aiPlayer)
+          game.addTurn
+      else
+          minorView(game.humanPlayer.currentPokemon)
+          reply = nil
+          until reply == "back" || reply == "exit"
+              puts "Which attack should #{game.humanPlayer.currentPokemon.name} use? (1-#{game.humanPlayer.currentPokemon.moveset.size}) (back)"
+              #What if out of PP?
+              reply = gets.strip.downcase
+              if (1..game.humanPlayer.currentPokemon.moveset.size).to_a.include?(reply.to_i)
+                  if game.humanPlayer.currentPokemon.moveset[reply.to_i-1].pp.to_i == 0
+                      puts "That move does not have enough Power Points (PP)"
+                  else
+                      attackOutput = game.humanPlayer.currentPokemon.moveset[reply.to_i-1].makeAttack(game.humanPlayer,game.aiPlayer) #this returns a string or array of what happens
+                      game.addTurn
+                      if attackOutput.is_a?(String)
+                          if attackOutput == "miss"
+                              puts "The attack missed!"
+                          elsif attackOutput == "lazy"
+                              puts "The programmer was too lazy to program this attack! Pick antoher one!"
+                              game.humanPlayer.currentPokemon.moveset.slice!(reply.to_i-1)
+                          end
+                      elsif attackOutput.is_a?(Array)
+                          # [damage, name of move, critical multiplyer, type multiplier]
+
+                      end
+
+                  end
+              end
+          end
+      end
+  end
+
   def viewPokemon(humanPlayer)
     puts "You have the following pokemon (the first pokemon is your starter):"
     humanPlayer.party.each_with_index{|pokemon, index| puts "##{index+1}: #{pokemon.name}"}
@@ -66,8 +112,8 @@ class Pokemon::CLI
 
   def switchPokemon(game)
       puts "#####################"
-      puts "Party:"
-      partyView(game.currentPlayer)
+      puts "Your Party:"
+      partyView(game.humanPlayer)
       puts "#####################"
 
       reply = nil
@@ -76,9 +122,9 @@ class Pokemon::CLI
           reply = gets.strip.downcase
           case reply.to_i
           when 1,2,3,4,5,6
-              if validSwitch?(game.currentPlayer, reply.to_i-1)
-                  puts "Come back #{game.currentPlayer.currentPokemon.name}! Go, #{game.currentPlayer.party[reply.to_i-1].name}!"
-                  game.currentPlayer.changePokemon(reply.to_i)
+              if validSwitch?(game.humanPlayer, reply.to_i-1)
+                  puts "Come back #{game.humanPlayer.currentPokemon.name}! Go, #{game.humanPlayer.party[reply.to_i-1].name}!"
+                  game.humanPlayer.changePokemon(reply.to_i)
                   game.addTurn
                   reply = "exit"
               else
@@ -199,6 +245,16 @@ class Pokemon::CLI
               end
           end
       end
+  end
+
+  def minorView(pokemon)
+      puts '^^^^^^^^^^^^^^^^^^'
+      puts "NAME: #{pokemon.name.upcase}"
+      puts '------------------'
+      pokemon.moveset.each do |move|
+          puts "#{move.name} | TYPE: #{move.type} | POWER: #{move.power} | ACC: #{move.acc} | PP: #{move.pp}" + move.pp == 0 ? " | 'OUT OF PP!'" : ""
+      end
+      puts '------------------'
   end
 
   def fullView(obj)

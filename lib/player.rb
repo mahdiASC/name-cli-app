@@ -8,9 +8,12 @@ class Player
   end
 
   def partyHP
-    party.collect {|pokemon| pokemon[:hp]}.reduce(:+)
+    party.collect {|pokemon| pokemon.hp.to_i}.reduce(:+)
   end
 
+  def partyHP
+    party.collect {|pokemon| pokemon.pp.to_i}.reduce(:+)
+  end
   # def viewParty
   #   @party.each do |pokemon|
   #     puts '------------------'

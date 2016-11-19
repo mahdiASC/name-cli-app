@@ -40,6 +40,14 @@ class Game
         @turnNum.odd? ? @player1 : @player2
     end
 
+    def humanPlayer
+        @player1.is_a(Human) ? @player1 : @player2
+    end
+
+    def aiPlayer
+        @player1.is_a(AI) ? @player1 : @player2
+    end
+
     def over?
         @player1.partyHP < 1 ||  @player2.partyHP < 1
     end
