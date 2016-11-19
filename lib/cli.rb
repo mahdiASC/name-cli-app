@@ -69,8 +69,8 @@ class Pokemon::CLI
 
       #Check if attacks are able to be used (PPs avail) use struggle in place of real move and cut option to pick attack
       if game.humanPlayer.currentPokemon.totalPP == 0
-          puts "#{game.humanPlayer.currentPokemon.name} is out of moves!"
-          puts "#{game.humanPlayer.currentPokemon.name} used Struggle!"
+          puts "#{game.humanPlayer.currentPokemon.name.upcase} is out of moves!"
+          puts "#{game.humanPlayer.currentPokemon.name.upcase} used STRUGGLE!"
           struggle = TempAttacks.new(Attacks.find_by_name("struggle"))
           struggle.makeAttack(game.humanPlayer,game.aiPlayer)
           game.addTurn
@@ -78,13 +78,14 @@ class Pokemon::CLI
           minorView(game.humanPlayer.currentPokemon)
           reply = nil
           until reply == "back" || reply == "exit"
-              puts "Which attack should #{game.humanPlayer.currentPokemon.name} use? (1-#{game.humanPlayer.currentPokemon.moveset.size}) (back)"
+              puts "What will #{game.humanPlayer.currentPokemon.name.upcase} do? (1-#{game.humanPlayer.currentPokemon.moveset.size}) (back)"
               #What if out of PP?
               reply = gets.strip.downcase
               if (1..game.humanPlayer.currentPokemon.moveset.size).to_a.include?(reply.to_i)
                   if game.humanPlayer.currentPokemon.moveset[reply.to_i-1].pp.to_i == 0
                       puts "That move does not have enough Power Points (PP)"
                   else
+                      puts "#{game.humanPlayer.currentPokemon.name.upcase} used #{game.humanPlayer.currentPokemon.moveset[reply.to_i-1].name.upcase}!"
                       attackOutput = game.humanPlayer.currentPokemon.moveset[reply.to_i-1].makeAttack(game.humanPlayer,game.aiPlayer) #this returns a string or array of what happens
                       game.addTurn
                       if attackOutput.is_a?(String)
@@ -94,11 +95,14 @@ class Pokemon::CLI
                               puts "The programmer was too lazy to program this attack! Pick antoher one!"
                               game.humanPlayer.currentPokemon.moveset.slice!(reply.to_i-1)
                           end
-                      elsif attackOutput.is_a?(Array)
-                          # [damage, name of move, critical multiplyer, type multiplier]
-
+                      elsif attackOutput.is_a?(Hash)
+                          # [critical multiplyer, type multiplier]
+                          if attackOutput[:crit]>1 || attackOutput[:typeMult]!=1
+                            message = attackOutput[:crit]>1 ? "A critical hit!": ""
+                            message += attackOutput[:typeMult]>1 ? " It's super effective!" : attackOutput[:typeMult]<1 "It's not very effective..." : ""
+                            puts message
+                          end
                       end
-
                   end
               end
           end
@@ -141,7 +145,7 @@ class Pokemon::CLI
   def partyView(player)
       player.party.each_with_index do |poke, index|
           if poke.hp.to_i == 0
-              status = "'Unconscious'"
+              status = "'Fainted!'"
           elsif poke == player.currentPokemon
               status = "'Already out'"
           else
@@ -252,7 +256,7 @@ class Pokemon::CLI
       puts "NAME: #{pokemon.name.upcase}"
       puts '------------------'
       pokemon.moveset.each do |move|
-          puts "#{move.name} | TYPE: #{move.type} | POWER: #{move.power} | ACC: #{move.acc} | PP: #{move.pp}" + move.pp == 0 ? " | 'OUT OF PP!'" : ""
+          puts "#{move.name} | TYPE: #{move.type} | PP: #{move.pp}" + move.pp == 0 ? " | 'OUT OF PP!'" : ""
       end
       puts '------------------'
   end

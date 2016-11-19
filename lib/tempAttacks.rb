@@ -212,7 +212,7 @@ class TempAttacks
     selfPokemon.takeDamage((damage.floor/4).floor)
   end
   #Returns array of pertinent information for the CLI
-  # [damage, name of move, critical multiplyer, type multiplier]
-  [damage, myName, myCrit, calcTypeMult(selfPokemon,opponentPokemon)]
+  # [critical multiplyer, type multiplier]
+  {:crit=> myCrit, :typeMult=>calcTypeMult(selfPokemon,opponentPokemon)}
   end
 end
