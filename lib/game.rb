@@ -41,11 +41,11 @@ class Game
     end
 
     def humanPlayer
-        @player1.is_a(Human) ? @player1 : @player2
+        @player1.is_a?(Human) ? @player1 : @player2
     end
 
     def aiPlayer
-        @player1.is_a(AI) ? @player1 : @player2
+        @player1.is_a?(AI) ? @player1 : @player2
     end
 
     def over?
@@ -63,6 +63,4 @@ class Game
     def addTurn
         @turnNum += 1
     end
-
-
 end

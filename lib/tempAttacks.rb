@@ -147,20 +147,25 @@ class TempAttacks
     @acc.to_i<rand(100)
   end
 
-  def makeAttack(selfPokemon,opponentPokemon)
+  def attackDeterminer(selfPokemon,opponentPokemon)
       #returns a string or and array of what happened
+    @pp = (@pp.to_i-1).to_s
     if miss?
-      "miss"
+      {}
     else
-      attackDeterminer(selfPokemon,opponentPokemon)
+      doDamage(selfPokemon,opponentPokemon)
     end
   end
 
-  def attackDeterminer(selfPokemon,opponentPokemon)
+  def offensiveAttack?
+    @power.to_i > 0
+  end
+
+  def makeAttack(selfPokemon,opponentPokemon)
     #determines if this attack is a regular damaging move or requires special
     #stat changes
-    if @power.to_i > 0
-      doDamage(selfPokemon,opponentPokemon)
+    if offensiveAttack?
+      attackDeterminer(selfPokemon,opponentPokemon)
     else
       doUnique(selfPokemon,opponentPokemon)
     end
@@ -172,7 +177,7 @@ class TempAttacks
 
   def doUnique(selfPokemon,opponentPokemon)
     #should return array for CLI
-    "lazy"
+    {}
   end
 
   def doDamage(selfPokemon,opponentPokemon)

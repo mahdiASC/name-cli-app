@@ -11,7 +11,7 @@ class Player
     party.collect {|pokemon| pokemon.hp.to_i}.reduce(:+)
   end
 
-  def partyHP
+  def partyPP
     party.collect {|pokemon| pokemon.pp.to_i}.reduce(:+)
   end
   # def viewParty
