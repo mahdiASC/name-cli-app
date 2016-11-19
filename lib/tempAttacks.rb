@@ -180,7 +180,7 @@ class TempAttacks
     {}
   end
 
-  def doDamage(selfPokemon,opponentPokemon)
+  def doDamage(selfPokemon,opponentPokemon, justCalcFlag=false)
   # opponent is a tempPokemon instance
   # Formula
   # https://www.gamefaqs.com/gameboy/367023-pokemon-red-version/faqs/54432
@@ -210,14 +210,15 @@ class TempAttacks
   # attack can do. Roughly, the attack can do anywhere from ~85% to 100% of its
   # expected damage.
   randomNum = rand(217..255)
-
   damage = ((0.84 * aPower * bPower / dPower) + 2) * multipliers * randomNum / 255
-  opponentPokemon.takeDamage(damage.floor)
-  if @name == "Struggle"
-    selfPokemon.takeDamage((damage.floor/4).floor)
+  if !justCalcFlag
+    opponentPokemon.takeDamage(damage.floor)
+    if @name == "Struggle"
+      selfPokemon.takeDamage((damage.floor/4).floor)
+    end
   end
   #Returns array of pertinent information for the CLI
-  # [critical multiplyer, type multiplier]
-  {:crit=> myCrit, :typeMult=>calcTypeMult(selfPokemon,opponentPokemon)}
+  # [critical multiplyer, type multiplier, damage, move name]
+  {:crit=> myCrit, :typeMult=>calcTypeMult(selfPokemon,opponentPokemon), :dmg => damage, :name => @name}
   end
 end

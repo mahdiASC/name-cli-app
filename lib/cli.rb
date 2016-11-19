@@ -7,7 +7,7 @@ class Pokemon::CLI
   end
 
   def validSwitch?(player, index)
-    player.currentPokemon != player.party[index]
+    player.currentPokemon != player.party[index] && player.party[index].hp.to_i != 0
   end
 
   def partyView(player)
@@ -215,8 +215,8 @@ class Pokemon::CLI
               else
                 # {critical multiplyer, type multiplier}
                 if attackOutput[:crit]>1 || attackOutput[:typeMult]!=1
-                  message = attackOutput[:crit]>1 ? "A critical hit!": ""
-                  message += attackOutput[:typeMult]>1 ? " It's super effective!" : attackOutput[:typeMult]<1 ? " It's not very effective..." : ""
+                  message = attackOutput[:crit]>1 ? "A critical hit! ": ""
+                  message += attackOutput[:typeMult]>1 ? "It's super effective!" : attackOutput[:typeMult]<1 ? "It's not very effective..." : ""
                   puts message
                 end
                 game.addTurn
@@ -263,10 +263,26 @@ class Pokemon::CLI
         viewPokemon(newGame.player2)
       end
 
+      puts "ComputerAI wants to fight!"
+
       until reply == "e" || newGame.over?
         if newGame.currentPlayer.is_a?(AI)
           #AI logic goes here
-          puts "AI stuff goes here!"
+          #inefficient copying!
+          attackOutput = newGame.aiPlayer.make_move(newGame.humanPlayer.currentPokemon)
+          binding.pry
+          puts "#{newGame.aiPlayer.currentPokemon.name.upcase} used #{attackOutput[:name]}!"
+          sleep 1
+          if attackOutput == {}
+            puts "The attack missed!"
+          else
+            # {critical multiplyer, type multiplier}
+            if attackOutput[:crit]>1 || attackOutput[:typeMult]!=1
+              message = attackOutput[:crit]>1 ? "A critical hit! ": ""
+              message += attackOutput[:typeMult]>1 ? "It's super effective!" : attackOutput[:typeMult]<1 ? "It's not very effective..." : ""
+              puts message
+            end
+          end
           newGame.addTurn
         else #human player has UI
           puts "=================================================="
@@ -282,6 +298,24 @@ class Pokemon::CLI
           when "p"
             accessPokedex
           end
+        end
+
+        #Battle results, possible change of pokemon
+
+        if newGame.anyFainted? && !newGame.over?
+          until !newGame.anyFainted?
+            if newGame.aiPlayer.currentPokemon.hp.to_i == 0
+              puts "Enemy #{newGame.aiPlayer.currentPokemon.name.upcase} fainted!"
+              newGame.aiPlayer.changePokemon
+              puts "ComputerAI sent out #{newGame.aiPlayer.currentPokemon.name.upcase}!"
+            end
+
+            if newGame.humanPlayer.currentPokemon.hp.to_i == 0
+              puts "#{newGame.aiPlayer.currentPokemon.name.upcase} fainted!"
+              switchPokemon(newGame)
+            end
+          end
+          newGame.pauseTurn
         end
       end
 

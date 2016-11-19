@@ -6,25 +6,42 @@ class AI < Player
     @difficulty = difficulty[0]
   end
 
-  def make_move
+  def make_move(enemyPokemon)
     if @difficulty=="easy"
-      easy_move
+      attack = easy_move(enemyPokemon)
     else
-      advanced_move
+      attack = advanced_move(enemyPokemon)
+    end
+
+    if !attack.nil?
+      attack.makeAttack(@currentPokemon , enemyPokemon)
+    else
+      struggle = TempAttacks.new(Attacks.find_by_name("struggle"))
+      struggle.makeAttack(@currentPokemon , enemyPokemon)
     end
   end
 
-  def easy_move
-
+  def random(array)
+    #returns a random item of the array
+    array[rand(array.size)]
   end
 
-  def advanced_move
-    @currentPokemon.moveset.max do |move|
-      if move.pp >0
-        move.power.to_i
-      else
-        0
-      end
+  def easy_move(enemyPokemon)
+    #random move
+    random(@currentPokemon.moveset.select {|move| move.power.to_i>0})
+  end
+
+  def advanced_move(enemyPokemon)
+    #hardest hitting move
+    moveset = @currentPokemon.moveset.select {|move| move.power.to_i>0}
+    if moveset.size < 1
+      nil
+    else
+      moveset.max {|move| move.doDamage(@currentPokemon,enemyPokemon, true)[:dmg]}
     end
+  end
+
+  def changePokemon
+    @currentPokemon = @party.detect{|poke| poke.hp.to_i >0}
   end
 end
