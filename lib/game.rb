@@ -15,7 +15,7 @@ class Game
       @player2=play2
       @player2.token = "2"
       @player2.party = randParty
-      @turnNum = 1
+      set_players_by_speed
     end
   end
 
@@ -39,6 +39,15 @@ class Game
     temp
   end
 
+  def set_players_by_speed
+    if @player1.currentPokemon.spd.to_i == @player2.currentPokemon.spd.to_i
+        if rand > 0.5
+            @turnNum = 1
+        end
+    else
+        @player1.currentPokemon.spd.to_i > @player2.currentPokemon.spd.to_i ? @turnNum = 1 : @turnNum = 2
+    end
+  end
 
   def currentPlayer
     @turnNum.odd? ? @player1 : @player2
@@ -56,7 +65,7 @@ class Game
     @player1.partyHP < 1 ||  @player2.partyHP < 1
   end
 
-  def winner?
+  def winner
     if over?
       @player1.partyHP < 1 ? @player2 : @player1
     else

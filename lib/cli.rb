@@ -175,7 +175,11 @@ class Pokemon::CLI
           game.addTurn
           reply = "exit"
         else
-          puts "That pokemon is already out!"
+          if game.humanPlayer.currentPokemon.hp.to_i == 0
+            puts "That pokemon has fainted!"
+          else
+            puts "That pokemon is already out!"
+          end
         end
       end
     end
@@ -219,8 +223,8 @@ class Pokemon::CLI
                   message += attackOutput[:typeMult]>1 ? "It's super effective!" : attackOutput[:typeMult]<1 ? "It's not very effective..." : ""
                   puts message
                 end
-                game.addTurn
               end
+              game.addTurn
             end
           end
         end
@@ -245,24 +249,14 @@ class Pokemon::CLI
         diff = gets.strip.downcase[0]
       end
 
-      until reply == "y" || reply == "n"
-        puts "Would you like to go first? (y)es (n)o"
-        reply = gets.strip.downcase[0]
-      end
-
       system "clear"
       puts "Setting up game. Please wait..."
-      case reply
-      when "y"
-        newGame = Game.new(Human.new, AI.new(diff))
-        system "clear"
-        viewPokemon(newGame.player1)
-      when "n"
-        newGame = Game.new(AI.new(diff),Human.new)
-        system "clear"
-        viewPokemon(newGame.player2)
-      end
 
+      newGame = Game.new(Human.new, AI.new(diff))
+      system "clear"
+      viewPokemon(newGame.player1)
+
+      puts "=================================================="
       puts "ComputerAI wants to fight!"
 
       until reply == "e" || newGame.over?
@@ -270,7 +264,7 @@ class Pokemon::CLI
           #AI logic goes here
           #inefficient copying!
           attackOutput = newGame.aiPlayer.make_move(newGame.humanPlayer.currentPokemon)
-          binding.pry
+          # binding.pry
           puts "#{newGame.aiPlayer.currentPokemon.name.upcase} used #{attackOutput[:name]}!"
           sleep 1
           if attackOutput == {}
@@ -289,14 +283,16 @@ class Pokemon::CLI
           puts "ENEMY POKEMON: #{newGame.aiPlayer.currentPokemon.name.upcase} | HP: #{newGame.aiPlayer.currentPokemon.hp}/#{Pokemon.find_by_name(newGame.aiPlayer.currentPokemon.name).hp}"
           puts "CURRENT POKEMON: #{newGame.humanPlayer.currentPokemon.name.upcase} | HP: #{newGame.humanPlayer.currentPokemon.hp}/#{Pokemon.find_by_name(newGame.humanPlayer.currentPokemon.name).hp}"
           puts "Pick an option: (a)ttack (s)witch (p)okedex (e)xit"
-          reply = gets.strip.downcase[0]
+          reply = gets.strip
           case reply
-          when "a"
+          when "a","attack"
             startAttack(newGame)
-          when "s"
+          when "s", "switch"
             switchPokemon(newGame)
-          when "p"
+          when "p", "pokedex"
             accessPokedex
+          when "debug"
+            binding.pry
           end
         end
 
@@ -311,12 +307,18 @@ class Pokemon::CLI
             end
 
             if newGame.humanPlayer.currentPokemon.hp.to_i == 0
-              puts "#{newGame.aiPlayer.currentPokemon.name.upcase} fainted!"
+              puts "#{newGame.humanPlayer.currentPokemon.name.upcase} fainted!"
               switchPokemon(newGame)
             end
           end
-          newGame.pauseTurn
+          newGame.set_players_by_speed
         end
+      end
+
+      if newGame.winner == newGame.humanPlayer
+        puts "Computer AI lost! You won the match!"
+      else
+        puts "You lost! Computer AI won the match!"
       end
 
       until reply == "y" || reply == "n"
